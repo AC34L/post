@@ -1,5 +1,5 @@
-var sw    = require("../Common/node/swagger.js");
-var param = require("../Common/node/paramTypes.js");
+var sw    = require("swagger-node-express");
+var param = sw.params;
 var url   = require("url");
 var swe   = sw.errors;
 
@@ -14,14 +14,34 @@ exports.models = require("../models.js");
 
 exports.get = {
   'spec': {
+    "path" : "/model.{format}/list",
+    "notes" : "Get Content Models",
+    "summary" : "Get a all Content Models",
+    "method": "GET",    
+    "params" : [],
+    "responseClass" : "List[Pet]",
+    "errorResponses" : [swe.invalid('tag')],
+    "nickname" : "getAllModels"
+  },
+  'action': function (req,res) {
+    var tagsString = url.parse(req.url,true).query["tags"];
+    if (!tagsString) {
+      throw swe.invalid('tag'); }
+    var output = petData.findPetByTags(tagsString);
+    writeResponse(res, output);
+  }
+};
+
+exports.get = {
+  'spec': {
     "path" : "/model.{format}/{id}",
-    "notes" : "Get Content Document",
-    "summary" : "Get a Content Document",
+    "notes" : "Get Content Model",
+    "summary" : "Get a Content Model",
     "method": "GET",    
     "params" : [param.query("tags", "Tags to filter by", "string", true, true)],
     "responseClass" : "List[Pet]",
     "errorResponses" : [swe.invalid('tag')],
-    "nickname" : "getContent"
+    "nickname" : "getModel"
   },
   'action': function (req,res) {
     var tagsString = url.parse(req.url,true).query["tags"];
@@ -35,8 +55,8 @@ exports.get = {
 exports.add = {
   'spec': {
     "path" : "/model.{format}",
-    "notes" : "Add content.",
-    "summary" : "Add a new content document",
+    "notes" : "Add Content Model",
+    "summary" : "Add a new Content Model",
     "method": "POST",
     "params" : [param.post("Pet", "Pet object that needs to be added to the store")],
     "errorResponses" : [swe.invalid('input')],

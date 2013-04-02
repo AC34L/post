@@ -1,19 +1,12 @@
 var express = require("express")
  , url = require("url")
- , swagger = require("./Common/node/swagger.js");
-
-var resources = require("./resources/index");
+ , swagger = require("swagger-node-express");
 
 var app = express();
 app.use(express.bodyParser());
 app.use(express.logger('dev'));
-
-// Set the main handler in swagger to the express app
 swagger.setAppHandler(app);
 
-// This is a sample validator.  It simply says that for _all_ POST, DELETE, PUT
-// methods, the header `api_key` OR query param `api_key` must be equal
-// to the string literal `special-key`.  All other HTTP ops are A-OK
 swagger.addValidator(
   function validate(req, path, httpMethod) {
     //  example, only allow POST for api_key="special-key"
@@ -30,22 +23,27 @@ swagger.addValidator(
   }
 );
 
+var resources = require("./resources/index");
+
 // Add models and methods to swagger
 swagger.addModels(resources.content.models)
-  .addGet(     resources.content.get)
-  .addGet(     resources.content.byTags)
-  .addGet(     resources.content.byStatus)
-  .addPost(    resources.content.add)
-  .addPut(     resources.content.update )
-  .addDelete(  resources.content.delete )
 
-  .addGet(     resources.models.get)
-  .addPost(    resources.models.add)
-  .addPut(     resources.models.update )
-  .addDelete(  resources.models.delete );
+  // Content CRUD
+  .addGet(     resources.content.get      )
+  .addGet(     resources.content.byTags   )
+  .addGet(     resources.content.byStatus )
+  .addPost(    resources.content.add      )
+  .addPut(     resources.content.update   )
+  .addDelete(  resources.content.delete   )
+
+  // Model CRUD
+  .addGet(     resources.models.get       )
+  .addPost(    resources.models.add       )
+  .addPut(     resources.models.update    )
+  .addDelete(  resources.models.delete    );
 
 // Configures the app's base path and api version.
-swagger.configure("http://localhost:8002", "0.1");
+swagger.configure(process.env.API_URL || 'http://localhost:8002', '0.1');
 
 // Serve up swagger ui at /docs via static route
 var docs_handler = express.static(__dirname + '/swagger-ui-1.1.7/');
@@ -60,5 +58,4 @@ app.get(/^\/docs(\/.*)?$/, function(req, res, next) {
   return docs_handler(req, res, next);
 });
 
-// Start the server on port 8002
 app.listen(8002);

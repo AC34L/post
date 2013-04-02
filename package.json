@@ -1,6 +1,10 @@
 {
   "name": "Post",
   "version": "0.0.1",
+  "engines": {
+    "node": "0.8.8",
+    "npm": "1.1.9"
+  },
   "description": "API for CMS Content.",
   "main": "web.js",
   "repository": {
@@ -8,7 +12,7 @@
     "url": "https://github.com/d1b1/post.git"
   },
   "keywords": [
-    "CMD",
+    "CMS",
     "API"
   ],
   "author": "Stephan Smith",
