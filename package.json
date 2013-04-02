@@ -1,0 +1,20 @@
+{
+  "name": "Post",
+  "version": "0.0.1",
+  "description": "API for CMS Content.",
+  "main": "web.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/d1b1/post.git"
+  },
+  "keywords": [
+    "CMD",
+    "API"
+  ],
+  "author": "Stephan Smith",
+  "license": "MIT",
+  "dependencies": {
+    "swagger-node-express": "~1.2.3",
+    "express": "~3.1.1"
+  }
+}
