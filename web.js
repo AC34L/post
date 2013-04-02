@@ -1,11 +1,15 @@
-var express = require("express")
- , url = require("url")
- , swagger = require("swagger-node-express");
+var express = require("express"),
+    url     = require("url"),
+    swagger = require("swagger-node-express");
 
 var app = express();
-app.use(express.bodyParser());
-app.use(express.logger('dev'));
-swagger.setAppHandler(app);
+app.configure(function(){
+
+  app.use(express.bodyParser());
+  app.set('port', process.env.PORT || 4000);
+  app.use(express.logger('dev'));
+  swagger.setAppHandler(app);
+});
 
 swagger.addValidator(
   function validate(req, path, httpMethod) {
@@ -27,7 +31,6 @@ var resources = require("./resources/index");
 
 // Add models and methods to swagger
 swagger.addModels(resources.content.models)
-
   // Content CRUD
   .addGet(     resources.content.get      )
   .addGet(     resources.content.byTags   )
@@ -43,7 +46,7 @@ swagger.addModels(resources.content.models)
   .addDelete(  resources.models.delete    );
 
 // Configures the app's base path and api version.
-swagger.configure(process.env.API_URL || 'http://localhost:8002', '0.1');
+swagger.configure(process.env.API_URL || 'http://localhost:4000', '0.1');
 
 // Serve up swagger ui at /docs via static route
 var docs_handler = express.static(__dirname + '/swagger-ui-1.1.7/');
@@ -58,4 +61,8 @@ app.get(/^\/docs(\/.*)?$/, function(req, res, next) {
   return docs_handler(req, res, next);
 });
 
-app.listen(4050);
+var port = process.env.PORT || 4000;
+app.listen(port, function() { 
+  console.log('StartUp: content API ' + port ); 
+});
+
