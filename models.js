@@ -1,4 +1,12 @@
 exports.models = {
+    "Model":{
+      "id":"Model",
+      "properties":{
+        "name":{
+          "type":"string"
+        }
+      }
+    },
     "Category":{
       "id":"Category",
       "properties":{

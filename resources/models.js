@@ -58,13 +58,14 @@ exports.add = {
     "notes" : "Add Content Model",
     "summary" : "Add a new Content Model",
     "method": "POST",
-    "params" : [param.post("model", "Pet object that needs to be added to the store")],
-    "errorResponses" : [swe.invalid('input')],
+    "params" : [param.post("model", "Model object for a new content type.", '{ "model": "" }', "ddd")],
     "nickname" : "addContentModel"
   },  
   'action': function(req, res) {
 
     var modelName = req.body.model.trim();
+
+    if (!modelName) return res.send('Invalid model');
 
     var modelSpec = {
       get: { 
@@ -74,7 +75,6 @@ exports.add = {
             "summary" : "Get a " + modelName + " Document",
             "method": "GET",    
             "params" : [],
-            "responseClass" : "List[Pet]",
             "errorResponses" : [swe.invalid('tag')],
             "nickname" : "postModel" + modelName
         },
@@ -89,7 +89,6 @@ exports.add = {
             "summary" : "Create a " + modelName + " Document",
             "method": "PUT",    
             "params" : [param.post(modelName, modelName + " object that needs to be update to the API.")],
-            "responseClass" : "List[Pet]",
             "errorResponses" : [swe.invalid('tag')],
             "nickname" : "putModel" + modelName
         },
@@ -104,7 +103,6 @@ exports.add = {
             "summary" : "Get a " + modelName + " Document",
             "method": "POST",    
             "params" : [param.post(modelName, modelName + " object that needs to be added to the API.")],
-            "responseClass" : "List[Pet]",
             "errorResponses" : [swe.invalid('tag')],
             "nickname" : "postModel" + modelName
         },
@@ -119,7 +117,6 @@ exports.add = {
             "summary" : "Delete a " + modelName + " Document",
             "method": "DELETE",    
             "params" : [],
-            "responseClass" : "List[Pet]",
             "errorResponses" : [swe.invalid('tag')],
             "nickname" : "deleteModel" + modelName
         },
