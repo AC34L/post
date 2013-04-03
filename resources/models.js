@@ -58,14 +58,13 @@ exports.add = {
     "notes" : "Add Content Model",
     "summary" : "Add a new Content Model",
     "method": "POST",
-    "params" : [param.post("model", "Model object for a new content type.", '{ "model": "" }', "ddd")],
+    "params" : [param.post("model", 'Model object for a new content type. example: { "model": "" }')],
     "nickname" : "addContentModel"
   },  
   'action': function(req, res) {
 
-    var modelName = req.body.model.trim();
-
-    if (!modelName) return res.send('Invalid model');
+    var modelName = req.body.model || '';
+    if (modelName == '') return res.send('Invalid model. example: { "model": "" }');
 
     var modelSpec = {
       get: { 
