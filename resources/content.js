@@ -2,8 +2,9 @@ var sw    = require("swagger-node-express");
 var param = sw.params;
 var url   = require("url");
 var swe   = sw.errors;
-
+var db    = require('../db').DbManager.getDb();
 var petData = require("../data.js");
+var mongoose = require ("mongoose");
 
 function writeResponse (res, data) {
   sw.setHeaders(res);
@@ -68,11 +69,19 @@ exports.get = {
     "nickname" : "getContent"
   },
   'action': function (req,res) {
-    var tagsString = url.parse(req.url,true).query["tags"];
-    if (!tagsString) {
-      throw swe.invalid('tag'); }
-    var output = petData.findPetByTags(tagsString);
-    writeResponse(res, output);
+    // var tagsString = url.parse(req.url,true).query["tags"];
+    // if (!tagsString) {
+    //   throw swe.invalid('tag'); }
+    // var output = petData.findPetByTags(tagsString);
+    // writeResponse(res, output);
+
+    // var Blog = db.model('Blog', db.blogSchema);
+
+    // Blog.find({}).exec(function(err, data) {
+    //   console.log(data);
+    // });
+
+    res.send('here we are');
   }
 };
 
@@ -82,19 +91,44 @@ exports.add = {
     "notes" : "Add content.",
     "summary" : "Add a new content document",
     "method": "POST",
-    "params" : [param.post("Pet", "Pet object that needs to be added to the store")],
+    "params" : [param.post("document", "New Document model")],
     "errorResponses" : [swe.invalid('input')],
     "nickname" : "addPet"
   },  
   'action': function(req, res) {
-    var body = req.body;
-    if(!body || !body.id){
-      throw swe.invalid('pet');
-    }
-    else{
-      petData.addPet(body);
-      res.send(200);
-    }  
+
+    console.log(db);
+
+    var blogSchema = new db.Schema({
+      title:  String,
+      author: String,
+      body:   String,
+      comments: [{ body: String, date: Date }],
+      date: { type: Date, default: Date.now },
+      hidden: Boolean,
+      meta: {
+        votes: Number,
+        favs:  Number
+      }
+    });
+
+    var Blog = mongoose.model('Blog', blogSchema);
+
+    var blog = new Blog({ title: 'My First Post' });
+
+    blog.save(function(err, data) {
+      console.log(data);
+    });
+    res.send('here now');
+
+    // var body = req.body;
+    // if(!body || !body.id){
+    //   throw swe.invalid('pet');
+    // }
+    // else{
+    //   petData.addPet(body);
+    //   res.send(200);
+    // }  
   }
 };
 

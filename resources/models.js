@@ -58,19 +58,86 @@ exports.add = {
     "notes" : "Add Content Model",
     "summary" : "Add a new Content Model",
     "method": "POST",
-    "params" : [param.post("Pet", "Pet object that needs to be added to the store")],
+    "params" : [param.post("model", "Pet object that needs to be added to the store")],
     "errorResponses" : [swe.invalid('input')],
     "nickname" : "addContentModel"
   },  
   'action': function(req, res) {
-    var body = req.body;
-    if(!body || !body.id){
-      throw swe.invalid('pet');
+
+    var modelName = req.body.model.trim();
+
+    var modelSpec = {
+      get: { 
+        "spec": {
+            "path" : "/" + modelName + ".{format}/{id}",
+            "notes" : "Get a " + modelName + " Document",
+            "summary" : "Get a " + modelName + " Document",
+            "method": "GET",    
+            "params" : [],
+            "responseClass" : "List[Pet]",
+            "errorResponses" : [swe.invalid('tag')],
+            "nickname" : "postModel" + modelName
+        },
+        "action": function (req,res) { 
+          res.send('We here.');
+        }
+      },
+      put: {
+        "spec": {
+            "path" : "/" + modelName + ".{format}/{id}",
+            "notes" : "Create a " + modelName + " Document",
+            "summary" : "Create a " + modelName + " Document",
+            "method": "PUT",    
+            "params" : [param.post(modelName, modelName + " object that needs to be update to the API.")],
+            "responseClass" : "List[Pet]",
+            "errorResponses" : [swe.invalid('tag')],
+            "nickname" : "putModel" + modelName
+        },
+        "action": function (req,res) { 
+          res.send('We here.');
+        }
+      },
+      post: {
+        "spec": {
+            "path" : "/" + modelName + ".{format}",
+            "notes" : "Create a " + modelName + " Document",
+            "summary" : "Get a " + modelName + " Document",
+            "method": "POST",    
+            "params" : [param.post(modelName, modelName + " object that needs to be added to the API.")],
+            "responseClass" : "List[Pet]",
+            "errorResponses" : [swe.invalid('tag')],
+            "nickname" : "postModel" + modelName
+        },
+        "action": function (req,res) { 
+          res.send('We here.');
+        }
+      },
+      delete: { 
+        "spec": {
+            "path" : "/" + modelName + ".{format}/{id}",
+            "notes" : "Delete a " + modelName + " Document",
+            "summary" : "Delete a " + modelName + " Document",
+            "method": "DELETE",    
+            "params" : [],
+            "responseClass" : "List[Pet]",
+            "errorResponses" : [swe.invalid('tag')],
+            "nickname" : "deleteModel" + modelName
+        },
+        "action": function (req,res) { 
+          res.send('We here.');
+        }
+      }
     }
-    else{
-      petData.addPet(body);
-      res.send(200);
-    }  
+
+    sw.addModels({})
+      .addGet(  modelSpec.get )
+      .addPut(  modelSpec.put )
+      .addPost( modelSpec.post )
+      .addDelete( modelSpec.delete );
+
+    sw.configure(process.env.API_URL || 'http://localhost:4000', '0.1');
+
+    res.send('Created the new ' + modelName);
   }
 };
 
